@@ -21,28 +21,39 @@ async function initSupabaseClient() {
         return;
     }
 
-    try {
-        // Coba ambil dari Vercel API endpoint
-        const response = await fetch('/api/config').catch(() => null);
-        if (response && response.ok) {
-            const config = await response.json();
-            if (config.supabaseUrl && config.supabaseKey) {
-                supabaseUrl = config.supabaseUrl;
-                supabaseKey = config.supabaseKey;
-                console.log('AELS: Konfigurasi Supabase dimuat dari Vercel Environment Variables.');
+    const defaultUrl = 'https://xirlfuncchdndlxpzpec.supabase.co';
+    const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpcmxmdW5jY2hkbmRseHB6cGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0ODcyODQsImV4cCI6MjEwMTA2MzI4NH0.yEaDE1CCXbIFdD0GNNGi4ITI8wanpujwLI7fp3CsdKc';
+
+    // Coba muat dari LocalStorage terlebih dahulu (jika pengguna meng-override secara manual)
+    const storedUrl = localStorage.getItem('aels_supabase_url');
+    const storedKey = localStorage.getItem('aels_supabase_key');
+
+    if (storedUrl && storedKey) {
+        supabaseUrl = storedUrl;
+        supabaseKey = storedKey;
+        console.log('AELS: Konfigurasi Supabase dimuat dari LocalStorage.');
+    } else {
+        try {
+            // Coba ambil dari Vercel API endpoint
+            const response = await fetch('/api/config').catch(() => null);
+            if (response && response.ok) {
+                const config = await response.json();
+                if (config.supabaseUrl && config.supabaseKey) {
+                    supabaseUrl = config.supabaseUrl;
+                    supabaseKey = config.supabaseKey;
+                    console.log('AELS: Konfigurasi Supabase dimuat dari Vercel Environment Variables.');
+                }
             }
+        } catch (e) {
+            console.log('AELS: Gagal memuat Vercel config API.');
         }
-    } catch (e) {
-        console.log('AELS: Gagal memuat Vercel config API, menggunakan LocalStorage fallback.');
     }
 
-    // Fallback ke LocalStorage jika Vercel config kosong
+    // Gunakan default hardcoded jika tidak ada di LocalStorage atau Vercel Environment Variables
     if (!supabaseUrl || !supabaseKey) {
-        supabaseUrl = localStorage.getItem('aels_supabase_url') || '';
-        supabaseKey = localStorage.getItem('aels_supabase_key') || '';
-        if (supabaseUrl && supabaseKey) {
-            console.log('AELS: Konfigurasi Supabase dimuat dari LocalStorage.');
-        }
+        supabaseUrl = defaultUrl;
+        supabaseKey = defaultKey;
+        console.log('AELS: Konfigurasi Supabase dimuat dari Default Hardcoded.');
     }
 
     // Inisialisasi client

@@ -87,8 +87,12 @@ function initPrinterSettingsForm() {
         supabaseUrlInput.value = storedUrl;
         supabaseKeyInput.value = storedKey;
 
-        if (storedUrl && storedKey) {
-            updateSupabaseStatus(true, 'Terhubung (Supabase Aktif)');
+        if (typeof isSupabaseActive === 'function' && isSupabaseActive()) {
+            if (storedUrl && storedKey) {
+                updateSupabaseStatus(true, 'Terhubung (Supabase Aktif - Manual)');
+            } else {
+                updateSupabaseStatus(true, 'Terhubung (Supabase Aktif - Default Otomatis)');
+            }
         } else {
             updateSupabaseStatus(false, 'Belum terhubung ke Supabase (Menggunakan LocalStorage)');
         }
