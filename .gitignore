@@ -1,0 +1,8 @@
+# Supabase binaries
+supabase.exe
+supabase-go.exe
+
+# Local temp and configuration files
+.temp/
+supabase/.temp/
+supabase/migrations/

@@ -5,26 +5,55 @@
  * ============================================================================
  */
 
-const supabaseUrl = localStorage.getItem('aels_supabase_url') || '';
-const supabaseKey = localStorage.getItem('aels_supabase_key') || '';
-
 let supabase = null;
-
-// Cek apakah konfigurasi Supabase tersedia
-if (supabaseUrl && supabaseKey && typeof supabaseJS !== 'undefined') {
-    try {
-        supabase = supabaseJS.createClient(supabaseUrl, supabaseKey);
-        console.log('AELS: Supabase Client terinisialisasi.');
-    } catch (e) {
-        console.error('AELS: Gagal menginisialisasi Supabase Client.', e);
-    }
-} else if (typeof supabaseJS === 'undefined') {
-    console.warn('AELS: Supabase JS library tidak dimuat. Pastikan script CDN Supabase ditambahkan.');
-}
+let supabaseUrl = '';
+let supabaseKey = '';
 
 // Helper untuk memeriksa status aktif Supabase
 function isSupabaseActive() {
     return supabase !== null;
+}
+
+// Inisialisasi konfigurasi Supabase dari Vercel API atau LocalStorage
+async function initSupabaseClient() {
+    if (typeof supabaseJS === 'undefined') {
+        console.warn('AELS: Supabase JS library tidak dimuat. Pastikan script CDN Supabase ditambahkan.');
+        return;
+    }
+
+    try {
+        // Coba ambil dari Vercel API endpoint
+        const response = await fetch('/api/config').catch(() => null);
+        if (response && response.ok) {
+            const config = await response.json();
+            if (config.supabaseUrl && config.supabaseKey) {
+                supabaseUrl = config.supabaseUrl;
+                supabaseKey = config.supabaseKey;
+                console.log('AELS: Konfigurasi Supabase dimuat dari Vercel Environment Variables.');
+            }
+        }
+    } catch (e) {
+        console.log('AELS: Gagal memuat Vercel config API, menggunakan LocalStorage fallback.');
+    }
+
+    // Fallback ke LocalStorage jika Vercel config kosong
+    if (!supabaseUrl || !supabaseKey) {
+        supabaseUrl = localStorage.getItem('aels_supabase_url') || '';
+        supabaseKey = localStorage.getItem('aels_supabase_key') || '';
+        if (supabaseUrl && supabaseKey) {
+            console.log('AELS: Konfigurasi Supabase dimuat dari LocalStorage.');
+        }
+    }
+
+    // Inisialisasi client
+    if (supabaseUrl && supabaseKey) {
+        try {
+            supabase = supabaseJS.createClient(supabaseUrl, supabaseKey);
+            console.log('AELS: Supabase Client berhasil terinisialisasi.');
+        } catch (e) {
+            console.error('AELS: Gagal menginisialisasi Supabase Client.', e);
+        }
+    }
 }
 
 /**
@@ -375,6 +404,9 @@ function setupRealtimeSubscriptions(onDataChangeCallback) {
  * Inisialisasi awal sinkronisasi data dari Supabase saat load
  */
 async function initializeSupabaseData(onFinishCallback) {
+    // Jalankan inisialisasi client asinkron terlebih dahulu
+    await initSupabaseClient();
+
     if (!isSupabaseActive()) {
         if (typeof onFinishCallback === 'function') onFinishCallback();
         return;
