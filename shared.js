@@ -355,8 +355,20 @@ function focusPrinterSetting(section) {
     }
 }
 
-// Check for redirect focal setting on load of pengaturan.html
+// Initialize shared UI components on DOMContentLoaded
 window.addEventListener('DOMContentLoaded', () => {
+    // Setup Mobile Menu & Printer Dropdown
+    setupMobileMenu();
+    initPrinterStatusDropdown();
+    
+    // Setup Live Clock
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
+    
+    // Update top-bar printer indicators to current state
+    updatePrinterConnectionDisplay(state.printSettings.printerType);
+
+    // Check for redirect focal setting on load of pengaturan.html
     const params = new URLSearchParams(window.location.search);
     const focusSection = params.get('focus');
     if (focusSection && window.location.pathname.includes('pengaturan.html')) {

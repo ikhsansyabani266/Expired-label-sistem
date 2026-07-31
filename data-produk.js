@@ -333,27 +333,19 @@ if (restoreDefaultDataBtn) {
 // 6. INISIALISASI SAAT HALAMAN DIMUAT
 // ============================================================================
 window.addEventListener('DOMContentLoaded', () => {
-    updateLiveClock();
-    setInterval(updateLiveClock, 1000);
-    setupMobileMenu();
-    initPrinterStatusDropdown();
-    
     if (typeof initializeSupabaseData === 'function') {
         initializeSupabaseData(() => {
             populateFilterCategories();
             refreshProductTable();
-            updatePrinterConnectionDisplay(state.printSettings.printerType);
         });
         
         setupRealtimeSubscriptions((table) => {
             console.log(`AELS Data Produk: Data '${table}' ter-update. Refreshing UI...`);
             populateFilterCategories();
             refreshProductTable();
-            updatePrinterConnectionDisplay(state.printSettings.printerType);
         });
     } else {
         populateFilterCategories();
         refreshProductTable();
-        updatePrinterConnectionDisplay(state.printSettings.printerType);
     }
 });
