@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181210" /> <!-- coffee-950 -->
+      <stop offset="100%" stop-color="#2E221E" /> <!-- coffee-800 -->
+    </linearGradient>
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669" /> <!-- coffee-500 (Emerald Mint) -->
+      <stop offset="50%" stop-color="#10B981" /> <!-- coffee-300 (Mint Green) -->
+      <stop offset="100%" stop-color="#059669" /> <!-- coffee-500 (Emerald Mint) -->
+    </linearGradient>
+    <linearGradient id="labelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8f8f8" /> <!-- Very light gray, almost white -->
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Glowing background circuit line accents -->
+  <path d="M10 20 H30 V40" stroke="#059669" stroke-width="1.5" opacity="0.3" stroke-dasharray="2 2" /> <!-- coffee-500 -->
+  <path d="M90 80 H70 V60" stroke="#10B981" stroke-width="1.5" opacity="0.3" stroke-dasharray="2 2" /> <!-- coffee-300 -->
+
+  <!-- Printer Base/Body -->
+  <rect x="20" y="45" width="60" height="40" rx="8" fill="url(#bodyGrad)" stroke="url(#neonGlow)" stroke-width="2.5" filter="url(#glow)" />
+  
+  <!-- Inner dark slot -->
+  <rect x="28" y="52" width="44" height="6" rx="2" fill="#0f0b09" /> <!-- Darker Espresso -->
+  
+  <!-- Thermal Sticker Label emerging from slot -->
+  <path d="M32 54 V30 Q32 25 37 25 H63 Q68 25 68 30 V54" fill="url(#labelGrad)" stroke="#A18A81" stroke-width="1" /> <!-- coffee-400 -->
+  
+  <!-- Barcode lines on the label -->
+  <line x1="38" y1="30" x2="38" y2="44" stroke="#181210" stroke-width="2" /> <!-- coffee-950 -->
+  <line x1="42" y1="30" x2="42" y2="44" stroke="#181210" stroke-width="1" /> <!-- coffee-950 -->
+  <line x1="45" y1="30" x2="45" y2="44" stroke="#181210" stroke-width="3" /> <!-- coffee-950 -->
+  <line x1="50" y1="30" x2="50" y2="44" stroke="#181210" stroke-width="1.5" /> <!-- coffee-950 -->
+  <line x1="54" y1="30" x2="54" y2="44" stroke="#181210" stroke-width="2" /> <!-- coffee-950 -->
+  <line x1="58" y1="30" x2="58" y2="44" stroke="#181210" stroke-width="1" /> <!-- coffee-950 -->
+  <line x1="62" y1="30" x2="62" y2="44" stroke="#181210" stroke-width="2.5" /> <!-- coffee-950 -->
+  
+  <!-- Text snippet on sticker -->
+  <rect x="38" y="47" width="24" height="3" rx="0.5" fill="#059669" /> <!-- coffee-500 -->
+
+  <!-- Front face details / status LEDs -->
+  <circle cx="30" cy="73" r="3" fill="#22c55e" filter="url(#glow)" /> <!-- emerald-500 (already green, keep) -->
+  <circle cx="40" cy="73" r="2.5" fill="#10B981" opacity="0.8" /> <!-- coffee-300 -->
+  
+  <!-- Feed Button -->
+  <rect x="62" y="68" width="10" height="10" rx="2" fill="#5C4033" stroke="#4E3629" stroke-width="1" /> <!-- coffee-700, coffee-900 -->
+  <circle cx="67" cy="73" r="2" fill="#A18A81" /> <!-- coffee-400 -->
+</svg>

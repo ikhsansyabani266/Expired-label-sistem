@@ -1,0 +1,527 @@
+<![CDATA[<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Label — AUTO EXPIRED LABEL SISTEM</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind Custom Configuration -->
+    <script src="tailwind-config.js"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-stone-50 text-stone-800 font-['Plus_Jakarta_Sans'] min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+
+    <!-- ============================================================================
+        PRINT AREA (HIDDEN)
+        Div ini hanya muncul saat mode cetak (window.print())
+    ============================================================================= -->
+    <div id="print-section" class="hidden print-container">
+        <!-- Label content will be dynamically generated here -->
+    </div>
+
+    <!-- ============================================================================
+        SIDEBAR NAVIGATION (DESKTOP)
+    ============================================================================= -->
+    <aside class="no-print w-full md:w-64 bg-coffee-950 text-coffee-400 flex flex-col flex-shrink-0 border-r border-coffee-800 transition-all duration-300">
+        <!-- Brand Header -->
+        <div class="p-5 flex items-center justify-between border-b border-coffee-800">
+            <div class="flex items-center gap-3">
+                <img src="logo-aels.svg" alt="AELS Logo" class="w-14 h-14 object-contain shrink-0">
+                <div class="flex flex-col leading-none select-none">
+                    <span class="text-[18px] font-black text-coffee-900 tracking-tighter uppercase">AUTO EXPIRED</span>
+                    <span class="text-[14px] font-black text-coffee-900 tracking-tighter uppercase mt-0.5">LABEL SISTEM</span>
+                    <span class="text-[9px] font-bold text-coffee-400 tracking-[0.2em] uppercase mt-1">COFFEE SHOP</span>
+                </div>
+            </div>
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-coffee-900 hover:text-coffee-300 focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav id="sidebar-nav" class="hidden md:flex flex-col gap-1 p-4 flex-grow">
+            <a href="index.html" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="cetak-label.html" class="nav-btn active flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium">
+                <i class="fa-solid fa-circle-plus w-5 text-center"></i>
+                <span>Cetak Label</span>
+            </a>
+            <a href="data-produk.html" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium">
+                <i class="fa-solid fa-table-list w-5 text-center"></i>
+                <span>Data Produk</span>
+            </a>
+            <a href="input-produk.html" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium">
+                <i class="fa-solid fa-box-open w-5 text-center"></i>
+                <span>Input Produk</span>
+            </a>
+            <a href="pengaturan.html" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium">
+                <i class="fa-solid fa-sliders w-5 text-center"></i>
+                <span>Pengaturan</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="no-print p-4 border-t border-coffee-800 text-center md:block hidden">
+            <div class="bg-coffee-800/40 rounded-xl p-3 border border-coffee-800/20">
+                <p class="text-xs text-coffee-900 font-semibold mb-1">Printer Thermal</p>
+                <div class="flex items-center justify-center gap-2">
+                    <span id="printer-status-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="printer-status-text" class="text-xs font-medium text-coffee-100">Ready (Browser)</span>
+                </div>
+            </div>
+            <p class="text-[10px] text-coffee-400 mt-3 font-medium">Expired Label Sistem v1.0</p>
+        </div>
+    </aside>
+
+    <!-- ============================================================================
+        MOBILE NAV OVERLAY (SIDEBAR UNTUK HP)
+    ============================================================================= -->
+    <div id="mobile-nav-menu" class="no-print hidden fixed inset-0 z-40 bg-coffee-950/95 flex flex-col p-6 pt-20">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-coffee-900 hover:text-white">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+        <div class="flex flex-col gap-2 mt-4 text-lg">
+            <a href="index.html" class="mobile-nav-btn flex items-center gap-4 px-5 py-4 rounded-xl text-coffee-900 hover:bg-coffee-500/20">
+                <i class="fa-solid fa-chart-pie text-xl w-6"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="cetak-label.html" class="mobile-nav-btn active flex items-center gap-4 px-5 py-4 rounded-xl text-coffee-900 hover:bg-coffee-500/20">
+                <i class="fa-solid fa-circle-plus text-xl w-6"></i>
+                <span>Cetak Label</span>
+            </a>
+            <a href="data-produk.html" class="mobile-nav-btn flex items-center gap-4 px-5 py-4 rounded-xl text-coffee-900 hover:bg-coffee-500/20">
+                <i class="fa-solid fa-table-list text-xl w-6"></i>
+                <span>Data Produk</span>
+            </a>
+            <a href="input-produk.html" class="mobile-nav-btn flex items-center gap-4 px-5 py-4 rounded-xl text-coffee-900 hover:bg-coffee-500/20">
+                <i class="fa-solid fa-box-open text-xl w-6"></i>
+                <span>Input Produk</span>
+            </a>
+            <a href="pengaturan.html" class="mobile-nav-btn flex items-center gap-4 px-5 py-4 rounded-xl text-coffee-900 hover:bg-coffee-500/20">
+                <i class="fa-solid fa-sliders text-xl w-6"></i>
+                <span>Pengaturan</span>
+            </a>
+        </div>
+        <div class="mt-auto bg-coffee-800/60 border border-coffee-800/40 rounded-2xl p-4 text-center">
+            <p class="text-xs text-coffee-900 mb-1">Printer Status</p>
+            <div class="flex items-center justify-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-semibold text-coffee-100">Connected</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="no-print flex-grow flex flex-col min-h-0 bg-stone-50 overflow-y-auto">
+        <!-- Top App Bar -->
+        <header class="bg-white border-b border-stone-200/80 py-4 px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+            <div class="flex items-center gap-3">
+                <h2 id="view-title" class="text-xl font-bold text-stone-850">Cetak Label</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- Live Date Time -->
+                <div class="hidden sm:flex items-center gap-3 text-stone-600 bg-stone-100/80 px-3 py-1.5 rounded-xl border border-stone-200/50 text-sm">
+                    <i class="fa-regular fa-clock text-coffee-500"></i>
+                    <span id="current-datetime" class="font-medium tracking-wide">-</span>
+                </div>
+
+                <!-- Printer Status Dropdown Trigger -->
+                <div class="relative">
+                    <button id="printer-status-btn" class="flex items-center gap-2 bg-white border border-stone-200 hover:bg-stone-50 px-3 py-1.5 rounded-xl transition-all shadow-sm">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" id="topbar-printer-dot"></div>
+                        <i class="fa-solid fa-print text-stone-500 text-sm"></i>
+                        <i class="fa-solid fa-chevron-down text-stone-400 text-[10px] ml-1 transition-transform duration-200" id="printer-status-chevron"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="printer-status-dropdown" class="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-stone-100 py-3 hidden transform opacity-0 scale-95 transition-all duration-200 origin-top-right z-50">
+                        <div class="px-5 pb-2 mb-2 border-b border-stone-100">
+                            <span class="text-[10px] font-extrabold text-stone-400 uppercase tracking-widest">Printer Status</span>
+                        </div>
+                        
+                        <!-- Menu Items -->
+                        <div class="flex flex-col">
+                            <!-- Network Printer -->
+                            <button id="nav-printer-network-btn" class="flex items-center justify-between px-5 py-3 hover:bg-stone-50 transition-colors group">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-full bg-coffee-500 flex items-center justify-center text-white shrink-0">
+                                        <i class="fa-solid fa-server text-base"></i>
+                                    </div>
+                                    <div class="flex flex-col items-start">
+                                        <span class="text-sm font-bold text-stone-800">Network Printer Setting</span>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-500" id="dd-network-dot"></span>
+                                            <span class="text-[11px] font-semibold text-emerald-600" id="dd-network-text">Connected</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-stone-300 group-hover:text-stone-500 transition-colors text-xs"></i>
+                            </button>
+                            
+                            <div class="mx-5 my-1 border-t border-stone-100"></div>
+
+                            <!-- Setting Printer -->
+                            <button id="nav-printer-general-btn" class="flex items-center justify-between px-5 py-3 hover:bg-stone-50 transition-colors group">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-full bg-coffee-500 flex items-center justify-center text-white shrink-0">
+                                        <i class="fa-solid fa-computer text-base"></i>
+                                    </div>
+                                    <div class="flex flex-col items-start">
+                                        <span class="text-sm font-bold text-stone-800">Setting Printer</span>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-2 h-2 rounded-full bg-rose-500" id="dd-general-dot"></span>
+                                            <span class="text-[11px] font-semibold text-rose-600" id="dd-general-text">Not Connected</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-stone-300 group-hover:text-stone-500 transition-colors text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= KONTEN HALAMAN ================= -->
+        <div class="p-4 md:p-6 lg:p-8 flex-grow">
+            <section id="input-view" class="view-content grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                
+                <!-- KIRI: FORM INPUT DATA PELABELAN -->
+                <div class="bg-white p-6 rounded-2xl border border-stone-200/60 shadow-sm lg:col-span-7 flex flex-col h-full">
+                    <form id="label-form" class="space-y-5 flex-grow flex flex-col justify-between">
+                        <div class="border-b border-stone-100 pb-3">
+                            <h3 class="font-extrabold text-stone-800 text-lg">Input Data Pelabelan</h3>
+                            <p class="text-xs text-stone-400 mt-1">Isi formulir di bawah ini dengan mengacu pada SOP masa simpan produk.</p>
+                        </div>
+
+                        <!-- 1 & 2. Kategori & Pilih Produk (Sejajar Kiri Kanan) -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Kategori Produk -->
+                            <div class="flex flex-col gap-2">
+                                <label for="category-select" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                    <i class="fa-solid fa-tags text-coffee-500"></i> Kategori Produk
+                                </label>
+                                <div class="relative">
+                                    <select id="category-select" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Pilih Kategori...</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-stone-400 text-xs">
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pilih Produk -->
+                            <div class="flex flex-col gap-2">
+                                <label for="product-select" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                    <i class="fa-solid fa-box-open text-coffee-500"></i> Pilih Produk
+                                </label>
+                                <div class="relative">
+                                    <select id="product-select" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Pilih Produk...</option>
+                                        <!-- Dynamic Options from state.masterProducts -->
+                                    </select>
+                                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-stone-400 text-xs">
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Tanggal & Waktu Dibuka -->
+                        <div class="flex flex-col gap-2">
+                            <label for="open-date" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-coffee-500"></i> Tanggal & Waktu Dibuka
+                            </label>
+                            <input type="datetime-local" id="open-date" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all">
+                        </div>
+
+                        <!-- 4. Masa Simpan & Barista -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-2">
+                                <label for="shelf-life" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                    <i class="fa-solid fa-hourglass-half text-coffee-500"></i> Masa Simpan (Hari)
+                                </label>
+                                <input type="number" id="shelf-life" required min="1" placeholder="Hari" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm font-bold text-stone-700 focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all">
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center justify-between">
+                                    <label for="barista-select" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                        <i class="fa-solid fa-user text-coffee-500"></i> Nama Barista
+                                    </label>
+                                    <button type="button" id="manage-barista-btn" class="text-[10px] font-bold text-coffee-600 hover:text-coffee-700 bg-coffee-50 hover:bg-coffee-100 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                                        <i class="fa-solid fa-gear"></i> Kelola
+                                    </button>
+                                </div>
+                                <div class="relative">
+                                    <select id="barista-select" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Pilih Barista...</option>
+                                        <!-- Dynamic Options from state.baristas -->
+                                    </select>
+                                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-stone-400 text-xs">
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Real-time Calculated Expiry Target -->
+                        <div class="bg-coffee-50 p-4 rounded-xl border border-coffee-200/50 flex flex-col gap-1.5">
+                            <label class="text-[10px] font-extrabold text-coffee-400 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-coffee-500"></i> Kalkulasi Tanggal Kedaluwarsa
+                            </label>
+                            <input type="text" id="calculated-expiry" readonly value="-" class="bg-transparent border-none p-0 text-lg font-extrabold text-coffee-700 tracking-wide focus:ring-0 select-all cursor-default font-mono">
+                        </div>
+
+                        <!-- 6. Opsi Cetak -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+                            <div class="flex items-center gap-2">
+                                <label for="print-qty" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                    <i class="fa-solid fa-copy text-coffee-500"></i> Jumlah Cetak:
+                                </label>
+                                <input type="number" id="print-qty" min="1" max="10" value="1" class="w-16 bg-stone-50 border border-stone-200 rounded-lg py-1.5 px-2.5 text-center text-sm font-bold text-stone-850">
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <input type="checkbox" id="auto-delete-tags" class="w-4.5 h-4.5 text-coffee-600 border-stone-300 rounded focus:ring-coffee-500 cursor-pointer">
+                                <label for="auto-delete-tags" class="text-xs font-semibold text-stone-600 select-none cursor-pointer">Hapus label lama produk sejenis</label>
+                            </div>
+                        </div>
+
+                        <!-- Action Submit -->
+                        <button type="submit" class="w-full bg-coffee-600 hover:bg-coffee-700 text-white font-black py-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print text-base"></i> PROSES LABEL & CETAK
+                        </button>
+                    </form>
+                </div>
+
+                <!-- KANAN: LIVE PREVIEW LABEL THERMAL -->
+                <div class="lg:col-span-5 h-full">
+                    <div class="bg-white p-6 rounded-2xl border border-stone-200/60 shadow-sm flex flex-col justify-between h-full items-center">
+                        <div class="w-full border-b border-stone-100 pb-3 mb-4">
+                            <h3 class="font-extrabold text-stone-800 text-sm flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Live Preview Label (Thermal)
+                            </h3>
+                        </div>
+
+                        <!-- Real Preview Box Container -->
+                        <div class="border border-stone-300/80 p-6 bg-stone-100/50 rounded-xl flex items-center justify-center w-full min-h-[220px] flex-grow my-4">
+                            <div id="preview-label-box" class="label-preview-wrapper bg-white border border-stone-350 shadow-md p-4 relative overflow-hidden flex flex-col justify-between">
+                                <!-- Badge -->
+                                <div id="preview-label-badge" class="absolute -right-12 -top-4 bg-emerald-500 text-white text-[9px] font-extrabold uppercase px-12 py-3 rotate-45 tracking-widest text-center select-none shadow-sm">
+                                    AMAN
+                                </div>
+
+                                <!-- Brand header -->
+                                <div class="border-b-2 border-stone-800 pb-2 mb-2 flex items-center gap-2">
+                                    <div class="flex flex-col leading-none">
+                                        <span class="text-[10px] font-black text-stone-900 tracking-tighter uppercase">AUTO EXPIRED LABEL SISTEM</span>
+                                        <span class="text-[5px] font-black text-stone-900 tracking-[0.15em] uppercase">COFFEE SHOP</span>
+                                    </div>
+                                    <div class="ml-auto text-right">
+                                        <p class="text-[7px] text-stone-600 font-bold uppercase tracking-widest">EXPIRED LABEL</p>
+                                    </div>
+                                </div>
+
+                                <!-- Details -->
+                                <div class="flex-grow flex flex-col justify-center py-1">
+                                    <div class="mb-2">
+                                        <span class="text-[9px] uppercase tracking-wider text-stone-500 font-bold">Produk</span>
+                                        <h4 id="preview-label-name" class="text-sm font-black text-stone-900 tracking-wide uppercase line-clamp-1 break-all">Nama Produk</h4>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-2 border-t border-dashed border-stone-300 pt-2">
+                                        <div>
+                                            <span class="text-[8px] uppercase tracking-wider text-stone-500 font-bold">Tanggal Buka</span>
+                                            <p id="preview-label-open" class="text-[9px] font-bold text-stone-950 font-mono tracking-tight">-</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-[8px] uppercase tracking-wider text-stone-500 font-bold">Kedaluwarsa</span>
+                                            <p id="preview-label-expiry" class="text-[9px] font-black text-rose-600 font-mono tracking-tight">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer Info -->
+                                <div class="border-t border-stone-800 pt-1.5 mt-2 flex items-center justify-between text-[7px] text-stone-500 font-bold">
+                                    <span id="preview-label-notes" class="truncate max-w-[130px]">Barista: -</span>
+                                    <div class="flex items-center gap-1 font-mono">
+                                        <i class="fa-solid fa-barcode text-[10px]"></i>
+                                        <span>*AELS-LABEL*</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info banner -->
+                        <div class="mt-4 flex gap-2.5 bg-stone-50 border border-stone-150 p-3 rounded-xl text-stone-600 text-xs leading-relaxed font-medium">
+                            <i class="fa-solid fa-circle-question text-coffee-500 text-md shrink-0 mt-0.5"></i>
+                            <p>Tampilan label thermal di atas disesuaikan dengan pengaturan ukuran kertas printer aktif Anda di menu <b>Pengaturan</b>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ============================================================================
+        MODAL KELOLA BARISTA (TAMBAH/EDIT/HAPUS)
+    ============================================================================= -->
+    <div id="barista-modal" class="no-print fixed inset-0 z-50 flex items-center justify-center hidden bg-stone-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl border border-stone-200/80 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[80vh]">
+            <!-- Header -->
+            <div class="bg-stone-50 px-5 py-4 border-b border-stone-100 flex items-center justify-between shrink-0">
+                <h4 class="font-extrabold text-stone-800 text-md"><i class="fa-solid fa-users text-coffee-600 mr-2"></i>Kelola Barista</h4>
+                <button type="button" class="close-barista-modal-btn text-stone-400 hover:text-stone-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 flex flex-col gap-4 overflow-y-auto flex-grow">
+                <!-- Add New -->
+                <form id="add-barista-form" class="flex gap-2">
+                    <input type="text" id="new-barista-input" required placeholder="Tambah nama barista baru..." class="flex-grow bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all">
+                    <button type="submit" class="bg-coffee-600 hover:bg-coffee-700 text-white px-4 py-2.5 rounded-xl font-bold transition-colors text-sm whitespace-nowrap shadow-sm">
+                        Tambah
+                    </button>
+                </form>
+
+                <!-- List -->
+                <div class="border border-stone-200 rounded-xl overflow-hidden flex flex-col">
+                    <div class="bg-stone-50 px-4 py-2 border-b border-stone-200 text-xs font-bold text-stone-500 uppercase tracking-wider">
+                        Daftar Nama Barista
+                    </div>
+                    <ul id="barista-list-container" class="divide-y divide-stone-100 max-h-60 overflow-y-auto">
+                        <!-- Items rendered via JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="px-5 py-4 bg-stone-50 border-t border-stone-100 flex items-center justify-end shrink-0">
+                <button type="button" class="close-barista-modal-btn bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold py-2 px-6 rounded-xl transition-all text-sm">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================================
+        MODAL PRATINJAU CETAK LABEL (KONFIRMASI PRINT)
+    ============================================================================= -->
+    <div id="print-modal" class="no-print fixed inset-0 z-50 flex items-center justify-center hidden bg-stone-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl border border-stone-200/80 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+            <!-- Header -->
+            <div class="bg-stone-50 px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+                <h4 class="font-extrabold text-stone-800 text-md">Pratinjau Cetak Label</h4>
+                <button type="button" class="close-print-modal-btn text-stone-400 hover:text-stone-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 flex flex-col items-center gap-5">
+                <p class="text-xs text-stone-500 text-center leading-relaxed font-medium">
+                    Silakan tinjau data label kedaluwarsa sebelum mengirimkannya to printer label thermal.
+                </p>
+
+                <!-- Dynamic Label Wrapper -->
+                <div class="border border-stone-300 p-2.5 bg-stone-100/50 rounded-lg flex justify-center items-center w-full">
+                    <div id="modal-label-box" class="label-preview-wrapper bg-white border border-stone-300 shadow-md p-4 relative overflow-hidden flex flex-col justify-between">
+                        <!-- Watermark -->
+                        <div id="modal-label-badge" class="absolute -right-12 -top-4 bg-emerald-500 text-white text-[9px] font-extrabold uppercase px-12 py-3 rotate-45 tracking-widest text-center select-none shadow-sm">
+                            AMAN
+                        </div>
+
+                        <!-- Brand -->
+                        <div class="border-b-2 border-stone-800 pb-2 mb-2 flex items-center gap-2">
+                            <div class="flex flex-col leading-none">
+                                <span class="text-[10px] font-black text-stone-900 tracking-tighter uppercase">AUTO EXPIRED LABEL SISTEM</span>
+                                <span class="text-[5px] font-black text-stone-900 tracking-[0.15em] uppercase">COFFEE SHOP</span>
+                            </div>
+                            <div class="ml-auto text-right">
+                                <p class="text-[7px] text-stone-600 font-bold uppercase tracking-widest">EXPIRED LABEL</p>
+                            </div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="flex-grow flex flex-col justify-center py-1">
+                            <div class="mb-2">
+                                <span class="text-[9px] uppercase tracking-wider text-stone-500 font-bold">Produk</span>
+                                <h4 id="modal-label-name" class="text-sm font-black text-stone-900 tracking-wide uppercase line-clamp-1 break-all">-</h4>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 border-t border-dashed border-stone-300 pt-2">
+                                <div>
+                                    <span class="text-[8px] uppercase tracking-wider text-stone-500 font-bold">Tanggal Buka</span>
+                                    <p id="modal-label-open" class="text-[9px] font-bold text-stone-950 font-mono tracking-tight">-</p>
+                                </div>
+                                <div>
+                                    <span class="text-[8px] uppercase tracking-wider text-stone-500 font-bold">Kedaluwarsa</span>
+                                    <p id="modal-label-expiry" class="text-[9px] font-black text-rose-600 font-mono tracking-tight">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Info -->
+                        <div class="border-t border-stone-800 pt-1.5 mt-2 flex items-center justify-between text-[7px] text-stone-500 font-bold">
+                            <span id="modal-label-notes" class="truncate max-w-[130px]">Barista: -</span>
+                            <div class="flex items-center gap-1 font-mono">
+                                <i class="fa-solid fa-barcode text-[10px]"></i>
+                                <span>*AELS-LABEL*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Printing Status / Simulated Loader -->
+                <div id="print-loading-msg" class="w-full hidden">
+                    <div class="flex items-center justify-center gap-2 text-coffee-600 font-bold text-sm bg-coffee-50 border border-coffee-100 rounded-xl py-2 px-3 animate-pulse">
+                        <i class="fa-solid fa-spinner animate-spin text-md"></i>
+                        <span>Sedang mencetak label...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="px-5 py-4 bg-stone-50 border-t border-stone-100 flex items-center gap-3">
+                <button type="button" class="close-print-modal-btn w-1/3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl transition-all text-sm">
+                    Batal
+                </button>
+                <button type="button" id="confirm-print-btn" class="w-2/3 bg-coffee-600 hover:bg-coffee-700 text-white font-bold py-2.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> Cetak Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================================
+        TOAST NOTIFICATIONS CONTAINER
+    ============================================================================= -->
+    <div id="toast-container" class="no-print fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full">
+        <!-- Toast items will be prepended here via JavaScript -->
+    </div>
+
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <!-- Supabase Client -->
+    <script src="supabase-client.js"></script>
+
+    <!-- ============================================================================
+        JAVASCRIPT FILES
+    ============================================================================= -->
+    <script src="shared.js"></script>
+    <script src="cetak-label.js"></script>
+</body>
+</html>
+]]>

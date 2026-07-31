@@ -1,0 +1,443 @@
+/* ============================================================================
+   STYLES.CSS
+   File ini mengatur gaya kustom tambahan di luar TailwindCSS, seperti 
+   scrollbar, animasi, modal transition, dan konfigurasi cetak stiker thermal.
+   ============================================================================ */
+
+/* ============================================================================
+   1. GLOBAL STYLES (FONTS & SELECTIONS)
+   ============================================================================ */
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   2. CUSTOM SCROLLBAR
+   ============================================================================ */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #F2F9F5; /* Very soft minty white background */
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #10B981; /* Mint Green */
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #059669; /* Emerald Green */
+}
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #10B981 #F2F9F5;
+}
+
+/* --- Selection Highlight --- */
+::selection {
+    background-color: #059669; /* Emerald Green */
+    color: #ffffff;
+}
+
+/* ============================================================================
+   3. CUSTOM UTILITIES & OVERRIDES
+   ============================================================================ */
+.text-stone-850 {
+    color: #1c1917;
+}
+
+/* ============================================================================
+   4. KOMPONEN UI & ANIMASI (SIDEBAR, NAV, BADGE)
+   ============================================================================ */
+/* Sidebar Transitions */
+.sidebar-transition {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* --- Navigation Button States --- */
+.nav-btn {
+    background: transparent;
+    color: #A18A81; /* Muted Warm Coffee Brown */
+}
+.nav-btn:hover {
+    background: rgba(5, 150, 105, 0.15); /* Mint Green transparent */
+    color: #ffffff;
+}
+.nav-btn.active {
+    background: #059669; /* Emerald Green */
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+/* Mobile Nav Button States */
+.mobile-nav-btn {
+    background: transparent;
+    color: #A18A81; /* Muted Warm Coffee Brown */
+}
+.mobile-nav-btn.active {
+    background: #059669; /* Emerald Green */
+    color: #ffffff;
+}
+
+/* --- Label Preview Wrapper --- */
+.label-preview-wrapper {
+    width: 250px;          /* Simulated 50mm width (1mm = 5px scaling) */
+    min-height: 175px;     /* Simulated 30mm height */
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    transition: width 0.2s ease, height 0.2s ease;
+}
+
+/* --- Print Modal Label Simulate Real Size --- */
+#modal-label-box.label-preview-wrapper {
+    width: 220px;
+    min-height: 150px;
+}
+
+/* ============================================================================
+   5. TOAST NOTIFICATIONS (ANIMASI)
+   ============================================================================ */
+.toast {
+    animation: slideUpFadeIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.35) forwards;
+}
+.toast-out {
+    animation: slideOutFade 0.3s ease-in forwards;
+}
+
+@keyframes slideUpFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideOutFade {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+}
+
+/* --- Badge Status Pulsing for near-expiry --- */
+.status-badge {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+.status-badge.active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+.status-badge.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    animation: pulseWarning 1.5s ease-in-out infinite;
+}
+.status-badge.expired {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+@keyframes pulseWarning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+}
+
+/* ============================================================================
+   6. KONFIGURASI CETAK (PRINT MEDIA QUERY)
+   ============================================================================ */
+/* Sembunyikan area cetak saat di layar */
+.print-container {
+    display: none;
+}
+
+@media print {
+    /* Hide all screen-only UI */
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Reset the main container for print */
+    .print-container {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Generic thermal label styling — actual dimensions enforced */
+    .print-label {
+        /* Default 50mm x 30mm; 1mm = 3.7795px approx for 96dpi */
+        width: 189px;  /* ~50mm */
+        height: 113px; /* ~30mm */
+        padding: 6px 8px;
+        border: 1px solid #000;
+        background: #fff;
+        font-family: 'Share Tech Mono', 'Courier New', monospace;
+        font-size: 7px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        page-break-after: always;
+        box-sizing: border-box;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    /* When printing multiple labels, place them side-by-side */
+    .print-label-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        justify-content: center;
+    }
+
+    /* Print label brand */
+    .print-label .brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1.5px solid #000;
+        padding-bottom: 2px;
+        margin-bottom: 2px;
+    }
+    .print-label .brand-logo {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+    .print-label .brand-logo span:first-child {
+        font-size: 8px;
+        font-weight: 900;
+        color: #000;
+        letter-spacing: -0.5px;
+    }
+    .print-label .brand-logo span:last-child {
+        font-size: 4px;
+        font-weight: 900;
+        color: #000;
+        letter-spacing: 0.15em;
+    }
+    .print-label .brand-label span {
+        font-size: 5px;
+        font-weight: 700;
+        color: #333;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Print product name */
+    .print-label .product-name {
+        font-weight: 900;
+        font-size: 8px;
+        color: #000;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    /* Print dates grid */
+    .print-label .dates {
+        display: flex;
+        gap: 4px;
+        border-top: 1px dashed #666;
+        padding-top: 2px;
+        margin-top: 2px;
+    }
+    .print-label .dates div {
+        flex: 1;
+    }
+    .print-label .dates span {
+        font-size: 5px;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #444;
+        display: block;
+    }
+    .print-label .dates p {
+        font-size: 6px;
+        font-weight: 700;
+        margin: 0;
+        color: #000;
+        font-family: monospace;
+        letter-spacing: -0.2px;
+    }
+
+    /* Print expiry highlight */
+    .print-label .expiry-date {
+        color: #b91c1c !important;
+        font-weight: 900 !important;
+    }
+
+    /* Print label footer (bar/barcode) */
+    .print-label .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #000;
+        padding-top: 1.5px;
+        margin-top: 2px;
+        font-size: 4.5px;
+        color: #555;
+        font-weight: 700;
+    }
+
+    /* Print watermark (if visible) */
+    .print-label .watermark {
+        position: absolute;
+        background: #333;
+        color: white;
+        font-size: 5px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-align: center;
+        padding: 1px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Remove extra page margins */
+    @page {
+        margin: 0;
+        size: 50mm 30mm;  /* Default print size, overridable */
+    }
+}
+
+/* --- Size Overrides for @page via classes (set in JS) --- */
+@media print {
+    body.print-size-40-30 .print-label {
+        width: 151px;  /* ~40mm */
+        height: 113px;
+    }
+
+    body.print-size-80-receipt .print-label {
+        width: 302px;  /* ~80mm */
+        height: auto;  /* auto-height for receipt style */
+        min-height: 80px;
+    }
+}
+
+/* --- Table Action Buttons --- */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.15s ease;
+    gap: 4px;
+}
+.action-btn.edit-btn {
+    background-color: #D1EFE0; /* Soft mint cream */
+    color: #065F46; /* Darker Emerald Green */
+}
+.action-btn.edit-btn:hover {
+    background-color: #059669; /* Emerald Green */
+    color: #ffffff;
+}
+.action-btn.print-btn {
+    background-color: #F2F9F5; /* Very soft minty white */
+    color: #059669; /* Emerald Green */
+    border: 1px solid rgba(5, 150, 105, 0.2); /* Emerald Green transparent */
+}
+.action-btn.print-btn:hover {
+    background-color: #059669; /* Emerald Green */
+    color: white;
+}
+.action-btn.delete-btn {
+    background-color: #fee2e2; /* Keep default red for delete */
+    color: #991b1b; /* Keep default red for delete */
+}
+.action-btn.delete-btn:hover {
+    background-color: #dc2626; /* Keep default red for delete */
+    color: white;
+}
+
+/* --- Input Focus Ring Enhancement --- */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #059669; /* Emerald Green */
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); /* Mint Green transparent */
+}
+
+/* --- Stagger Animations for Dashboard Cards --- */
+.stagger-item {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: staggerFadeIn 0.4s ease forwards;
+}
+.stagger-item:nth-child(1) { animation-delay: 0.05s; }
+.stagger-item:nth-child(2) { animation-delay: 0.1s; }
+.stagger-item:nth-child(3) { animation-delay: 0.15s; }
+.stagger-item:nth-child(4) { animation-delay: 0.2s; }
+.stagger-item:nth-child(5) { animation-delay: 0.25s; }
+.stagger-item:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes staggerFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Modal Backdrop Overlay --- */
+.modal-show {
+    display: flex !important;
+}
+.modal-show .transform {
+    transform: scale(1) !important;
+}
+
+/* --- Disable Select on Interactive / Link Items --- */
+.table-clickable {
+    cursor: pointer;
+}
+.table-clickable:hover {
+    background-color: #F2F9F5;
+}
+
+/* --- Responsive Helpers --- */
+@media (max-width: 768px) {
+    .label-preview-wrapper {
+        width: 200px;
+        min-height: 140px;
+    }
+    #modal-label-box.label-preview-wrapper {
+        width: 180px;
+        min-height: 130px;
+    }
+}
+
+/* --- Print-specific: forced hide on elements not for thermal label --- */
+.print-hidden {
+    display: none;
+}
