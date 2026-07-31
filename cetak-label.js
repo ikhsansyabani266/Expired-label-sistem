@@ -73,7 +73,7 @@ function populateProductDropdown() {
     sorted.forEach(prod => {
         const opt = document.createElement('option');
         opt.value = prod.id;
-        opt.textContent = `${prod.name} (${prod.days} Hari)`;
+        opt.textContent = prod.name;
         productSelect.appendChild(opt);
     });
 }
