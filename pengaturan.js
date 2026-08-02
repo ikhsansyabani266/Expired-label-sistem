@@ -20,9 +20,6 @@ const resetPrintCounterBtn = document.getElementById('reset-print-counter');
 const factoryResetDbBtn = document.getElementById('factory-reset-db');
 
 // Supabase DOM Elements
-const supabaseUrlInput = document.getElementById('supabase-url');
-const supabaseKeyInput = document.getElementById('supabase-key');
-const saveSupabaseConfigBtn = document.getElementById('save-supabase-config');
 const supabaseStatusDot = document.getElementById('supabase-status-dot');
 const supabaseStatusText = document.getElementById('supabase-status-text');
 
@@ -87,63 +84,24 @@ function initPrinterSettingsForm() {
         });
     }
 
-    // Inisialisasi Supabase Settings Form
-    if (supabaseUrlInput && supabaseKeyInput) {
-        const storedUrl = localStorage.getItem('aels_supabase_url') || '';
-        const storedKey = localStorage.getItem('aels_supabase_key') || '';
-        supabaseUrlInput.value = storedUrl;
-        supabaseKeyInput.value = storedKey;
-
-        if (typeof isSupabaseActive === 'function' && isSupabaseActive()) {
-            if (storedUrl && storedKey) {
-                updateSupabaseStatus(true, 'Terhubung (Supabase Aktif - Manual)');
-            } else {
-                updateSupabaseStatus(true, 'Terhubung (Supabase Aktif - Default Otomatis)');
-            }
-        } else {
-            updateSupabaseStatus(false, 'Belum terhubung ke Supabase (Menggunakan LocalStorage)');
-        }
-    }
-
-    if (saveSupabaseConfigBtn) {
-        saveSupabaseConfigBtn.addEventListener('click', () => {
-            const urlVal = supabaseUrlInput.value.trim();
-            const keyVal = supabaseKeyInput.value.trim();
-
-            if (urlVal && !urlVal.startsWith('http')) {
-                showToast('Gagal', 'URL Supabase harus dimulai dengan http:// atau https://', 'error');
-                return;
-            }
-
-            localStorage.setItem('aels_supabase_url', urlVal);
-            localStorage.setItem('aels_supabase_key', keyVal);
-
-            if (urlVal && keyVal) {
-                showToast('Berhasil', 'Konfigurasi Supabase disimpan! Aplikasi akan mencoba memuat ulang data dari server.', 'success');
-                updateSupabaseStatus(true, 'Terhubung (Supabase Aktif)');
-            } else {
-                showToast('Info', 'Konfigurasi Supabase dikosongkan. Kembali menggunakan LocalStorage.', 'info');
-                updateSupabaseStatus(false, 'Belum terhubung ke Supabase (Menggunakan LocalStorage)');
-            }
-
-            // Reload agar inisialisasi Supabase di shared.js berjalan dengan konfigurasi baru
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        });
+    // Inisialisasi Status Koneksi Supabase
+    if (typeof isSupabaseActive === 'function' && isSupabaseActive()) {
+        updateSupabaseStatus(true, 'Terhubung ke Database Cloud (Realtime)');
+    } else {
+        updateSupabaseStatus(false, 'Menggunakan LocalStorage (Offline / Belum Terhubung)');
     }
 }
 
 function updateSupabaseStatus(connected, message) {
     if (!supabaseStatusDot || !supabaseStatusText) return;
     if (connected) {
-        supabaseStatusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
+        supabaseStatusDot.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0';
         supabaseStatusText.textContent = message;
-        supabaseStatusText.className = 'text-emerald-600';
+        supabaseStatusText.className = 'text-emerald-600 font-extrabold mt-0.5';
     } else {
-        supabaseStatusDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+        supabaseStatusDot.className = 'w-3 h-3 rounded-full bg-rose-500 shrink-0';
         supabaseStatusText.textContent = message;
-        supabaseStatusText.className = 'text-rose-600';
+        supabaseStatusText.className = 'text-rose-600 font-extrabold mt-0.5';
     }
 }
 

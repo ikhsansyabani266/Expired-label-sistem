@@ -199,8 +199,8 @@
             <section id="data-view" class="view-content flex flex-col gap-5">
                 
                 <!-- PANEL FILTER (PENCARIAN, KATEGORI, STATUS) -->
-                <div class="bg-white p-5 rounded-2xl border border-stone-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-grow max-w-3xl">
+                <div class="bg-white p-5 rounded-2xl border border-stone-200/60 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-grow max-w-4xl">
                         <!-- Search Box -->
                         <div class="relative">
                             <input type="text" id="search-input" placeholder="Cari nama produk / barista..." class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all">
@@ -208,8 +208,16 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </div>
                         </div>
+
+                        <!-- Search Category Box -->
+                        <div class="relative">
+                            <input type="text" id="search-category" placeholder="Cari kategori..." class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all">
+                            <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-stone-400 text-xs">
+                                <i class="fa-solid fa-folder-tree"></i>
+                            </div>
+                        </div>
                         
-                        <!-- Category Filter -->
+                        <!-- Category Filter Dropdown -->
                         <div class="relative">
                             <select id="filter-category" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-coffee-500/20 focus:border-coffee-500 transition-all appearance-none cursor-pointer">
                                 <option value="all">Semua Kategori</option>

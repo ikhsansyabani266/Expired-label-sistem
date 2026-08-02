@@ -11,6 +11,7 @@
 // ============================================================================
 const productTableBody = document.getElementById('product-table-body');
 const searchInput = document.getElementById('search-input');
+const searchCategory = document.getElementById('search-category');
 const filterCategory = document.getElementById('filter-category');
 const filterStatus = document.getElementById('filter-status');
 const resetFiltersBtn = document.getElementById('reset-filters');
@@ -33,8 +34,10 @@ const editNotes = document.getElementById('edit-notes');
 function populateFilterCategories() {
     if (!filterCategory) return;
     
-    // Extract unique categories from master list
-    const categories = [...new Set(state.masterProducts.map(p => p.category))].sort();
+    // Extract unique categories from master list and actual product history
+    const masterCats = state.masterProducts.map(p => p.category).filter(Boolean);
+    const productCats = state.products.map(p => p.category).filter(Boolean);
+    const categories = [...new Set([...masterCats, ...productCats])].sort();
     
     // Keep 'all' option
     filterCategory.innerHTML = '<option value="all">Semua Kategori</option>';
@@ -65,6 +68,7 @@ function refreshProductTable() {
     if (!productTableBody) return;
 
     const query = searchInput.value.toLowerCase().trim();
+    const catQuery = searchCategory ? searchCategory.value.toLowerCase().trim() : '';
     const catFilter = filterCategory.value;
     const statusFilter = filterStatus.value;
 
@@ -74,14 +78,18 @@ function refreshProductTable() {
                            (prod.category && prod.category.toLowerCase().includes(query)) ||
                            (prod.notes && prod.notes.toLowerCase().includes(query));
         
-        // 2. Category Match
+        // 2. Category Search Box Match
+        const prodCat = prod.category ? prod.category.toLowerCase() : '';
+        const matchCatQuery = !catQuery || prodCat.includes(catQuery);
+        
+        // 3. Category Match
         const matchCat = catFilter === 'all' || prod.category === catFilter;
         
-        // 3. Status Match
+        // 4. Status Match
         const status = determineProductStatus(prod.expiryDate);
         const matchStatus = statusFilter === 'all' || status.code === statusFilter;
 
-        return matchQuery && matchCat && matchStatus;
+        return matchQuery && matchCatQuery && matchCat && matchStatus;
     });
 
     // Update Counter text
@@ -273,12 +281,14 @@ document.querySelectorAll('.close-edit-modal-btn').forEach(btn => {
 
 // Filters event listeners
 if (searchInput) searchInput.addEventListener('input', refreshProductTable);
+if (searchCategory) searchCategory.addEventListener('input', refreshProductTable);
 if (filterCategory) filterCategory.addEventListener('change', refreshProductTable);
 if (filterStatus) filterStatus.addEventListener('change', refreshProductTable);
 
 if (resetFiltersBtn) {
     resetFiltersBtn.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
+        if (searchCategory) searchCategory.value = '';
         if (filterCategory) filterCategory.value = 'all';
         if (filterStatus) filterStatus.value = 'all';
         refreshProductTable();
