@@ -94,6 +94,18 @@ function initPrinterSettingsForm() {
         });
     }
 
+    // Hapus legacy local storage browser
+    const clearLocalStorageBtn = document.getElementById('clear-local-storage');
+    if (clearLocalStorageBtn) {
+        clearLocalStorageBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin menghapus seluruh sisa-sisa data local storage di browser Anda?')) {
+                const keys = ['aels_master_products', 'aels_products', 'aels_print', 'aels_total_printed', 'aels_baristas'];
+                keys.forEach(key => localStorage.removeItem(key));
+                showToast('Sukses', 'Semua data local storage AELS berhasil dibersihkan dari browser Anda.', 'success');
+            }
+        });
+    }
+
     // Inisialisasi Status Koneksi Supabase
     if (typeof isSupabaseActive === 'function' && isSupabaseActive()) {
         updateSupabaseStatus(true, 'Terhubung ke Database Cloud (Realtime)');

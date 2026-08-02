@@ -36,6 +36,19 @@ function getOffsetDateString(daysOffset) {
 // ============================================================================
 // 2. MANAJEMEN STATE (MEMORY ONLY - CLOUD BACKED)
 // ============================================================================
+// Pembersihan data localStorage warisan (legacy) agar tidak membebani browser
+const legacyKeys = ['aels_master_products', 'aels_products', 'aels_print', 'aels_total_printed', 'aels_baristas'];
+legacyKeys.forEach(key => {
+    try {
+        if (localStorage.getItem(key) !== null) {
+            localStorage.removeItem(key);
+            console.log(`AELS Cleanup: Membersihkan legacy localStorage key '${key}'`);
+        }
+    } catch (e) {
+        console.error('AELS Cleanup: Gagal menghapus legacy localStorage.', e);
+    }
+});
+
 let state = {
     masterProducts: DEFAULT_MASTER_PRODUCTS,
     products: DEFAULT_PRODUCTS,
