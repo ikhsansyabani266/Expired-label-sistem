@@ -16,7 +16,7 @@ function isSupabaseActive() {
 
 // Inisialisasi konfigurasi Supabase dari Vercel API atau LocalStorage
 async function initSupabaseClient() {
-    if (typeof supabaseJS === 'undefined') {
+    if (typeof window.supabase === 'undefined') {
         console.warn('AELS: Supabase JS library tidak dimuat. Pastikan script CDN Supabase ditambahkan.');
         return;
     }
@@ -59,7 +59,7 @@ async function initSupabaseClient() {
     // Inisialisasi client
     if (supabaseUrl && supabaseKey) {
         try {
-            supabase = supabaseJS.createClient(supabaseUrl, supabaseKey);
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
             console.log('AELS: Supabase Client berhasil terinisialisasi.');
         } catch (e) {
             console.error('AELS: Gagal menginisialisasi Supabase Client.', e);
