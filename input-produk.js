@@ -157,7 +157,7 @@ window.deleteSopItem = function(id) {
     const confirmDelete = confirm(`Apakah Anda yakin ingin menghapus "${master.name}" dari Master SOP?`);
     if (confirmDelete) {
         state.masterProducts = state.masterProducts.filter(m => m.id !== id);
-        saveMasterProducts();
+        saveMasterProducts(null, id);
         refreshSopTable();
         showToast('Terhapus', 'Master produk berhasil dihapus dari SOP.', 'success');
     }
@@ -183,7 +183,9 @@ if (categoryModalForm) {
         if (id) {
             const idx = state.masterProducts.findIndex(m => m.id === id);
             if (idx !== -1) {
-                state.masterProducts[idx] = { id, name: nameVal, category: catVal, days: daysVal };
+                const updated = { id, name: nameVal, category: catVal, days: daysVal };
+                state.masterProducts[idx] = updated;
+                saveMasterProducts(updated);
                 showToast('Tersimpan', `Master SOP "${nameVal}" berhasil diperbarui.`, 'success');
             }
         } else {
@@ -194,10 +196,10 @@ if (categoryModalForm) {
                 days: daysVal
             };
             state.masterProducts.push(newMaster);
+            saveMasterProducts(newMaster);
             showToast('Ditambahkan', `Produk "${nameVal}" berhasil ditambahkan ke SOP.`, 'success');
         }
 
-        saveMasterProducts();
         refreshSopTable();
 
         if (categoryModal) categoryModal.classList.remove('modal-show');
@@ -257,10 +259,10 @@ if (renameCatForm) {
             if (prod.category === oldCat) {
                 prod.category = newCat;
                 count++;
+                saveMasterProducts(prod);
             }
         });
         
-        saveMasterProducts();
         refreshSopTable();
         
         showToast('Kategori Diperbarui', `Berhasil mengubah nama kategori "${oldCat}" menjadi "${newCat}" pada ${count} produk.`, 'success');
@@ -281,10 +283,13 @@ if (deleteCatBtn) {
         
         if (confirmDelete) {
             const initialLength = state.masterProducts.length;
+            const toDelete = state.masterProducts.filter(prod => prod.category === selectedCat);
             state.masterProducts = state.masterProducts.filter(prod => prod.category !== selectedCat);
             const deletedCount = initialLength - state.masterProducts.length;
             
-            saveMasterProducts();
+            toDelete.forEach(prod => {
+                saveMasterProducts(null, prod.id);
+            });
             refreshSopTable();
             
             showToast('Kategori Dihapus', `Kategori "${selectedCat}" dan ${deletedCount} produk di dalamnya berhasil dihapus.`, 'success');

@@ -301,9 +301,9 @@ if (resetFiltersBtn) {
 // ============================================================================
 const restoreDefaultDataBtn = document.getElementById('restore-default-data');
 if (restoreDefaultDataBtn) {
-    restoreDefaultDataBtn.addEventListener('click', () => {
+    restoreDefaultDataBtn.addEventListener('click', async () => {
         if (confirm('Apakah Anda yakin ingin memulihkan semua data riwayat pelabelan ke data bawaan?')) {
-            state.products = [
+            const defaults = [
                 {
                     id: 'prod-1',
                     name: 'Fresh Milk Greenfields 1L',
@@ -332,7 +332,16 @@ if (restoreDefaultDataBtn) {
                     notes: 'Riski'
                 }
             ];
-            saveProducts();
+
+            if (typeof dbResetProducts === 'function') {
+                await dbResetProducts();
+                for (const prod of defaults) {
+                    await dbAddProduct(prod);
+                }
+            } else {
+                state.products = defaults;
+            }
+
             refreshProductTable();
             showToast('Data Dipulihkan', 'Data riwayat pelabelan berhasil dikembalikan ke data bawaan.', 'success');
         }

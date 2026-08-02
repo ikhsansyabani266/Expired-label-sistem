@@ -298,7 +298,7 @@ window.editBarista = function(index) {
         }
         
         state.baristas[index] = trimmed;
-        saveBaristas();
+        saveBaristas(null, null, oldName, trimmed);
         renderBaristaListModal();
         renderBaristaDropdown();
         showToast('Berhasil', 'Nama barista berhasil diubah.', 'success');
@@ -312,7 +312,7 @@ window.deleteBarista = function(index) {
     const confirmed = confirm(`Apakah Anda yakin ingin menghapus "${name}" dari daftar?`);
     if (confirmed) {
         state.baristas.splice(index, 1);
-        saveBaristas();
+        saveBaristas(null, name);
         renderBaristaListModal();
         renderBaristaDropdown();
         showToast('Terhapus', `Barista "${name}" berhasil dihapus.`, 'success');
@@ -346,7 +346,7 @@ if (addBaristaForm) {
         }
         
         state.baristas.push(newName);
-        saveBaristas();
+        saveBaristas(newName);
         
         newBaristaInput.value = '';
         renderBaristaListModal();
