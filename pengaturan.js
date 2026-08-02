@@ -151,7 +151,28 @@ if (testPrintBtn) {
 // 5. INISIALISASI SAAT HALAMAN DIMUAT
 // ============================================================================
 window.addEventListener('DOMContentLoaded', () => {
-    initPrinterSettingsForm();
+    if (typeof initializeSupabaseData === 'function') {
+        initializeSupabaseData(() => {
+            initPrinterSettingsForm();
+        });
+        
+        setupRealtimeSubscriptions((table) => {
+            console.log(`AELS Pengaturan: Data '${table}' ter-update. Refreshing UI...`);
+            if (table === 'printSettings') {
+                if (printerSelect) printerSelect.value = state.printSettings.printerType;
+                if (printerIpAddress) printerIpAddress.value = state.printSettings.printerIpAddress || '';
+                if (printerPort) printerPort.value = state.printSettings.printerPort || '9100';
+                if (labelSizeSelect) labelSizeSelect.value = state.printSettings.labelSize;
+                if (totalPrintedEl) totalPrintedEl.textContent = state.printSettings.totalPrinted;
+                toggleIpInputGroup(state.printSettings.printerType);
+                
+                // Perbarui juga status koneksi dan indikator printer global di topbar
+                updatePrinterConnectionDisplay(state.printSettings.printerType);
+            }
+        });
+    } else {
+        initPrinterSettingsForm();
+    }
 });
 
 window.refreshLocalUI = function() {

@@ -298,7 +298,20 @@ if (deleteCatBtn) {
 // 6. INISIALISASI SAAT HALAMAN DIMUAT
 // ============================================================================
 window.addEventListener('DOMContentLoaded', () => {
-    refreshSopTable();
+    if (typeof initializeSupabaseData === 'function') {
+        initializeSupabaseData(() => {
+            refreshSopTable();
+        });
+        
+        setupRealtimeSubscriptions((table) => {
+            console.log(`AELS Input Produk: Data '${table}' ter-update. Refreshing UI...`);
+            if (table === 'masterProducts') {
+                refreshSopTable();
+            }
+        });
+    } else {
+        refreshSopTable();
+    }
 });
 
 window.refreshLocalUI = function() {
