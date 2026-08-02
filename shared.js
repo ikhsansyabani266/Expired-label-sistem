@@ -34,40 +34,29 @@ function getOffsetDateString(daysOffset) {
 }
 
 // ============================================================================
-// 2. MANAJEMEN STATE (LOCALSTORAGE)
+// 2. MANAJEMEN STATE (MEMORY ONLY - CLOUD BACKED)
 // ============================================================================
 let state = {
-    masterProducts: JSON.parse(localStorage.getItem('aels_master_products')) || DEFAULT_MASTER_PRODUCTS,
-    products: JSON.parse(localStorage.getItem('aels_products')) || DEFAULT_PRODUCTS,
-    printSettings: (() => {
-        const defaults = {
-            printerType: 'browser',
-            printerIpAddress: '',
-            printerPort: '9100',
-            labelSize: 'size-50-30',
-            totalPrinted: parseInt(localStorage.getItem('aels_total_printed') || '12')
-        };
-        try {
-            const stored = JSON.parse(localStorage.getItem('aels_print'));
-            if (stored && typeof stored === 'object') {
-                return { ...defaults, ...stored };
-            }
-        } catch (e) {}
-        return defaults;
-    })(),
-    baristas: JSON.parse(localStorage.getItem('aels_baristas')) || ['Ikhsan', 'Arwah', 'Syabani', 'Barista Shift']
+    masterProducts: DEFAULT_MASTER_PRODUCTS,
+    products: DEFAULT_PRODUCTS,
+    printSettings: {
+        printerType: 'browser',
+        printerIpAddress: '',
+        printerPort: '9100',
+        labelSize: 'size-50-30',
+        totalPrinted: 12
+    },
+    baristas: ['Ikhsan', 'Arwah', 'Syabani', 'Barista Shift']
 };
 
 // Save helper functions
 function saveMasterProducts(itemToUpsert = null, itemToDeleteId = null) {
-    localStorage.setItem('aels_master_products', JSON.stringify(state.masterProducts));
     if (typeof dbSaveMasterProduct === 'function') {
         if (itemToUpsert) dbSaveMasterProduct(itemToUpsert);
         if (itemToDeleteId) dbDeleteMasterProduct(itemToDeleteId);
     }
 }
 function saveProducts(itemToInsert = null, itemToDeleteId = null, itemToUpdate = null) {
-    localStorage.setItem('aels_products', JSON.stringify(state.products));
     if (typeof dbAddProduct === 'function') {
         if (itemToInsert) dbAddProduct(itemToInsert);
         if (itemToDeleteId) dbDeleteProduct(itemToDeleteId);
@@ -75,14 +64,11 @@ function saveProducts(itemToInsert = null, itemToDeleteId = null, itemToUpdate =
     }
 }
 function savePrintSettings() {
-    localStorage.setItem('aels_print', JSON.stringify(state.printSettings));
-    localStorage.setItem('aels_total_printed', state.printSettings.totalPrinted);
     if (typeof dbSavePrintSettings === 'function') {
         dbSavePrintSettings();
     }
 }
 function saveBaristas(addedName = null, deletedName = null, oldName = null, newName = null) {
-    localStorage.setItem('aels_baristas', JSON.stringify(state.baristas));
     if (typeof dbAddBarista === 'function') {
         if (addedName) dbAddBarista(addedName);
         if (deletedName) dbDeleteBarista(deletedName);

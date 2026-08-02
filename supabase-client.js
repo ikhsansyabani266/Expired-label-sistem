@@ -24,29 +24,19 @@ async function initSupabaseClient() {
     const defaultUrl = 'https://xirlfuncchdndlxpzpec.supabase.co';
     const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpcmxmdW5jY2hkbmRseHB6cGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0ODcyODQsImV4cCI6MjEwMTA2MzI4NH0.yEaDE1CCXbIFdD0GNNGi4ITI8wanpujwLI7fp3CsdKc';
 
-    // Coba muat dari LocalStorage terlebih dahulu (jika pengguna meng-override secara manual)
-    const storedUrl = localStorage.getItem('aels_supabase_url');
-    const storedKey = localStorage.getItem('aels_supabase_key');
-
-    if (storedUrl && storedKey) {
-        supabaseUrl = storedUrl;
-        supabaseKey = storedKey;
-        console.log('AELS: Konfigurasi Supabase dimuat dari LocalStorage.');
-    } else {
-        try {
-            // Coba ambil dari Vercel API endpoint
-            const response = await fetch('/api/config').catch(() => null);
-            if (response && response.ok) {
-                const config = await response.json();
-                if (config.supabaseUrl && config.supabaseKey) {
-                    supabaseUrl = config.supabaseUrl;
-                    supabaseKey = config.supabaseKey;
-                    console.log('AELS: Konfigurasi Supabase dimuat dari Vercel Environment Variables.');
-                }
+    try {
+        // Coba ambil dari Vercel API endpoint
+        const response = await fetch('/api/config').catch(() => null);
+        if (response && response.ok) {
+            const config = await response.json();
+            if (config.supabaseUrl && config.supabaseKey) {
+                supabaseUrl = config.supabaseUrl;
+                supabaseKey = config.supabaseKey;
+                console.log('AELS: Konfigurasi Supabase dimuat dari Vercel Environment Variables.');
             }
-        } catch (e) {
-            console.log('AELS: Gagal memuat Vercel config API.');
         }
+    } catch (e) {
+        console.log('AELS: Gagal memuat Vercel config API.');
     }
 
     // Gunakan default hardcoded jika tidak ada di LocalStorage atau Vercel Environment Variables
@@ -93,7 +83,6 @@ async function syncMasterProducts() {
                 category: item.category,
                 days: item.days
             }));
-            localStorage.setItem('aels_master_products', JSON.stringify(state.masterProducts));
         } else {
             // Jika kosong di server, upload data lokal awal
             for (const prod of state.masterProducts) {
@@ -132,7 +121,6 @@ async function syncProducts() {
                 expiryDate: item.expiry_date,
                 notes: item.notes
             }));
-            localStorage.setItem('aels_products', JSON.stringify(state.products));
         }
     } catch (err) {
         console.error('AELS: Gagal sinkronisasi riwayat produk.', err);
@@ -153,7 +141,6 @@ async function syncBaristas() {
 
         if (data && data.length > 0) {
             state.baristas = data.map(item => item.name);
-            localStorage.setItem('aels_baristas', JSON.stringify(state.baristas));
         } else {
             // Jika kosong di server, upload data lokal awal
             for (const name of state.baristas) {
@@ -186,8 +173,6 @@ async function syncPrintSettings() {
                 labelSize: item.label_size,
                 totalPrinted: item.total_printed
             };
-            localStorage.setItem('aels_print', JSON.stringify(state.printSettings));
-            localStorage.setItem('aels_total_printed', state.printSettings.totalPrinted);
         } else {
             // Upload setting saat ini jika database kosong
             await supabase.from('aels_print_settings').insert([{
@@ -311,6 +296,30 @@ async function dbResetProducts() {
         console.error('AELS DB: Gagal mereset tabel produk.', err);
     }
 }
+
+// Menghapus seluruh isi tabel untuk Factory Reset di cloud Supabase
+async function dbFactoryReset() {
+    if (!isSupabaseActive()) return false;
+    try {
+        // Hapus history produk
+        await supabase.from('aels_products').delete().neq('id', 'dummy');
+        
+        // Hapus master products
+        await supabase.from('aels_master_products').delete().neq('id', 'dummy');
+        
+        // Hapus baristas
+        await supabase.from('aels_baristas').delete().neq('name', 'dummy');
+        
+        // Hapus print settings
+        await supabase.from('aels_print_settings').delete().neq('id', 0);
+        
+        return true;
+    } catch (err) {
+        console.error('AELS DB: Gagal factory reset cloud.', err);
+        return false;
+    }
+}
+window.dbFactoryReset = dbFactoryReset;
 
 // Menambah Barista
 async function dbAddBarista(name) {

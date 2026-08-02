@@ -72,14 +72,24 @@ function initPrinterSettingsForm() {
 
     // Factory reset database
     if (factoryResetDbBtn) {
-        factoryResetDbBtn.addEventListener('click', () => {
-            const confirmReset = confirm('Apakah Anda yakin ingin menghapus seluruh database? Semua data SOP, riwayat pelabelan, dan pengaturan printer akan dihapus permanen.');
+        factoryResetDbBtn.addEventListener('click', async () => {
+            const confirmReset = confirm('Apakah Anda yakin ingin menghapus seluruh database di Cloud Supabase? Semua data SOP, riwayat pelabelan, dan pengaturan printer akan dihapus permanen.');
             if (confirmReset) {
-                localStorage.clear();
-                showToast('Menghapus seluruh database dan memuat ulang...', 'warning');
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                showToast('Menghapus...', 'Menghapus database cloud Supabase...', 'warning');
+                
+                let success = false;
+                if (typeof dbFactoryReset === 'function') {
+                    success = await dbFactoryReset();
+                }
+                
+                if (success) {
+                    showToast('Reset Berhasil', 'Database Cloud berhasil dibersihkan. Memuat ulang...', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showToast('Gagal Reset', 'Gagal membersihkan database Cloud Supabase atau koneksi terputus.', 'error');
+                }
             }
         });
     }
@@ -88,7 +98,7 @@ function initPrinterSettingsForm() {
     if (typeof isSupabaseActive === 'function' && isSupabaseActive()) {
         updateSupabaseStatus(true, 'Terhubung ke Database Cloud (Realtime)');
     } else {
-        updateSupabaseStatus(false, 'Menggunakan LocalStorage (Offline / Belum Terhubung)');
+        updateSupabaseStatus(false, 'Koneksi Terputus / Tidak Terhubung ke Database Cloud');
     }
 }
 
