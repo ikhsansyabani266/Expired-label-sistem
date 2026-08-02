@@ -75,3 +75,11 @@ BEGIN
         END IF;
     END IF;
 END $$;
+
+-- 6. Menonaktifkan Row Level Security (RLS) pada semua tabel
+-- Karena aplikasi AELS bertipe local/internal client-only tanpa authentication,
+-- RLS dinonaktifkan agar client dapat langsung melakukan read/write via anon key.
+ALTER TABLE aels_master_products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE aels_products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE aels_baristas DISABLE ROW LEVEL SECURITY;
+ALTER TABLE aels_print_settings DISABLE ROW LEVEL SECURITY;
