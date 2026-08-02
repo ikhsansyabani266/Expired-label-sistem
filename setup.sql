@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS aels_print_settings (
     id integer primary key,
     printer_type text not null,
     printer_ip_address text,
+    printer_port text default '9100',
     label_size text not null,
     total_printed integer not null,
     created_at timestamp with time zone default timezone('utc'::text, now()) not null

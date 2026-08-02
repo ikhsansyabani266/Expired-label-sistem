@@ -182,6 +182,7 @@ async function syncPrintSettings() {
             state.printSettings = {
                 printerType: item.printer_type,
                 printerIpAddress: item.printer_ip_address,
+                printerPort: item.printer_port || '9100',
                 labelSize: item.label_size,
                 totalPrinted: item.total_printed
             };
@@ -193,6 +194,7 @@ async function syncPrintSettings() {
                 id: 1, // ID tunggal untuk setting
                 printer_type: state.printSettings.printerType,
                 printer_ip_address: state.printSettings.printerIpAddress,
+                printer_port: state.printSettings.printerPort || '9100',
                 label_size: state.printSettings.labelSize,
                 total_printed: state.printSettings.totalPrinted
             }]);
@@ -361,6 +363,7 @@ async function dbSavePrintSettings() {
                 id: 1,
                 printer_type: state.printSettings.printerType,
                 printer_ip_address: state.printSettings.printerIpAddress,
+                printer_port: state.printSettings.printerPort || '9100',
                 label_size: state.printSettings.labelSize,
                 total_printed: state.printSettings.totalPrinted
             });

@@ -39,12 +39,22 @@ function getOffsetDateString(daysOffset) {
 let state = {
     masterProducts: JSON.parse(localStorage.getItem('aels_master_products')) || DEFAULT_MASTER_PRODUCTS,
     products: JSON.parse(localStorage.getItem('aels_products')) || DEFAULT_PRODUCTS,
-    printSettings: JSON.parse(localStorage.getItem('aels_print')) || {
-        printerType: 'browser',
-        printerIpAddress: '',
-        labelSize: 'size-50-30',
-        totalPrinted: parseInt(localStorage.getItem('aels_total_printed') || '12')
-    },
+    printSettings: (() => {
+        const defaults = {
+            printerType: 'browser',
+            printerIpAddress: '',
+            printerPort: '9100',
+            labelSize: 'size-50-30',
+            totalPrinted: parseInt(localStorage.getItem('aels_total_printed') || '12')
+        };
+        try {
+            const stored = JSON.parse(localStorage.getItem('aels_print'));
+            if (stored && typeof stored === 'object') {
+                return { ...defaults, ...stored };
+            }
+        } catch (e) {}
+        return defaults;
+    })(),
     baristas: JSON.parse(localStorage.getItem('aels_baristas')) || ['Ikhsan', 'Arwah', 'Syabani', 'Barista Shift']
 };
 
@@ -196,6 +206,17 @@ function determineProductStatus(expiryDateTimeStr) {
 }
 
 // ============================================================================
+// 4. HELPER FUNCTION: Parse IP:PORT (default port 9100 for ESC/POS thermal printers)
+// ============================================================================
+function parseIpPort(ipStr) {
+    if (!ipStr) return { host: '', port: 9100 };
+    const parts = ipStr.split(':');
+    const host = parts[0].trim();
+    const port = parts.length > 1 ? parseInt(parts[1], 10) : 9100;
+    return { host, port };
+}
+
+// ============================================================================
 // 5. FUNGSI UI (MENU MOBILE & PRINTER STATUS)
 // ============================================================================
 function setupMobileMenu() {
@@ -227,13 +248,24 @@ function updatePrinterConnectionDisplay(type) {
         dotClass = "w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping border-2 border-white shadow-md";
     } else if (type === 'ip-address') {
         const ipText = state.printSettings.printerIpAddress || 'IP Kosong';
-        statusLabel = `IP Printer: ${ipText}`;
+        const portText = state.printSettings.printerPort || '9100';
+        statusLabel = `IP Printer: ${ipText}:${portText}`;
         statusClass = "text-md font-bold text-blue-600 mt-0.5";
         indicatorClass = "w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse";
         dotClass = "w-3.5 h-3.5 rounded-full bg-blue-500 animate-pulse border-2 border-white shadow-md";
     }
 
-    if (printerStatusText) printerStatusText.textContent = type === 'simulated-error' ? 'Offline / Error' : (type === 'ip-address' ? `IP: ${state.printSettings.printerIpAddress || 'IP Kosong'}` : 'Ready (Browser)');
+    if (printerStatusText) {
+        if (type === 'simulated-error') {
+            printerStatusText.textContent = 'Offline / Error';
+        } else if (type === 'ip-address') {
+            const ipVal = state.printSettings.printerIpAddress || 'IP Kosong';
+            const portVal = state.printSettings.printerPort || '9100';
+            printerStatusText.textContent = `IP: ${ipVal}:${portVal}`;
+        } else {
+            printerStatusText.textContent = 'Ready (Browser)';
+        }
+    }
     if (printerStatusIndicator) printerStatusIndicator.className = indicatorClass;
 
     if (settingsPrinterStatusText) {
@@ -533,17 +565,26 @@ if (confirmPrintBtn) {
 
         } else if (printerType === 'ip-address') {
             const ip = state.printSettings.printerIpAddress;
+            const configuredPort = state.printSettings.printerPort || '9100';
             if (!ip) {
                 confirmPrintBtn.disabled = false;
                 showToast('Error', 'Alamat IP printer belum diisi!', 'error');
                 return;
             }
 
+            let host = ip;
+            let port = configuredPort;
+            if (ip.includes(':')) {
+                const parsed = parseIpPort(ip);
+                host = parsed.host;
+                port = parsed.port;
+            }
             printLoadingMsg.classList.remove('hidden');
 
             const printDataPayload = {
                 type: "expired_label",
-                printer_ip: ip,
+                printer_ip: host,
+                printer_port: parseInt(port, 10),
                 data: {
                     name: currentLabelData.name,
                     openDate: formatDateIndo(new Date(currentLabelData.openDate)),
@@ -553,7 +594,7 @@ if (confirmPrintBtn) {
                 }
             };
 
-            fetch(`http://${ip}/print`, {
+            fetch(`http://${host}:${port}/print`, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -567,13 +608,13 @@ if (confirmPrintBtn) {
 
                     handlePrintSuccess();
 
-                    showToast('Cetak Berhasil', `Data terkirim ke printer dengan IP: ${ip} (${printCopies} kopi).`, 'success');
+                    showToast('Cetak Berhasil', `Data terkirim ke printer dengan IP: ${host}:${port} (${printCopies} kopi).`, 'success');
                 }, 800);
             })
             .catch(err => {
                 printLoadingMsg.classList.add('hidden');
                 confirmPrintBtn.disabled = false;
-                showToast('Error Koneksi', `Gagal terhubung ke printer ${ip}. Pastikan printer menyala & IP benar.`, 'error');
+                showToast('Error Koneksi', `Gagal terhubung ke printer ${host}:${port}. Pastikan printer menyala & IP/Port benar.`, 'error');
             });
 
         } else {

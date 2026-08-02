@@ -11,6 +11,7 @@
 // ============================================================================
 const printerSelect = document.getElementById('settings-printer-type');
 const printerIpAddress = document.getElementById('settings-printer-ip');
+const printerPort = document.getElementById('settings-printer-port');
 const printerIpInputGroup = document.getElementById('printer-ip-input-group');
 const labelSizeSelect = document.getElementById('settings-label-size');
 const testPrintBtn = document.getElementById('test-print-btn');
@@ -34,6 +35,9 @@ function initPrinterSettingsForm() {
     // Load initial values from settings state
     printerSelect.value = state.printSettings.printerType;
     printerIpAddress.value = state.printSettings.printerIpAddress || '';
+    if (printerPort) {
+        printerPort.value = state.printSettings.printerPort || '9100';
+    }
     labelSizeSelect.value = state.printSettings.labelSize;
 
     if (totalPrintedEl) {
@@ -50,6 +54,9 @@ function initPrinterSettingsForm() {
     });
 
     printerIpAddress.addEventListener('input', saveUpdatedPrinterSettings);
+    if (printerPort) {
+        printerPort.addEventListener('input', saveUpdatedPrinterSettings);
+    }
     labelSizeSelect.addEventListener('change', saveUpdatedPrinterSettings);
 
     // Reset print counter
@@ -155,6 +162,9 @@ function toggleIpInputGroup(type) {
 function saveUpdatedPrinterSettings() {
     state.printSettings.printerType = printerSelect.value;
     state.printSettings.printerIpAddress = printerIpAddress.value.trim();
+    if (printerPort) {
+        state.printSettings.printerPort = printerPort.value.trim() || '9100';
+    }
     state.printSettings.labelSize = labelSizeSelect.value;
 
     savePrintSettings();
